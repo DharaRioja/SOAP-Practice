@@ -15,11 +15,11 @@ import javax.xml.bind.annotation.XmlType;
 public class Student {
     
     @XmlElement(name = "studentId")
-    private int studentId;
+    private int studentId=0;
     @XmlElement(name = "lastName")
-    private String lastName;
+    private String lastName="?";
     @XmlElement(name = "firstName")
-    private String firstName;
+    private String firstName="?";
     // add and objetList of 
     @XmlElement(name = "codes")
     private List<String> codes;
@@ -84,4 +84,6 @@ public class Student {
     {
         return codes;
     }
+    
+   
 }

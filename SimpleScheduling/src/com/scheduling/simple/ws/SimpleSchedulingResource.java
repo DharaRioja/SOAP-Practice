@@ -22,7 +22,14 @@ public class SimpleSchedulingResource {
     
     public Student createStudent(int studentId, String lastName, String firstName) {
         Student student = new Student(studentId, lastName, firstName);
-        studentsMap.put(studentId, student);
+        if(studentId!=0 && !"?".equals(lastName) && !"?".equals(firstName))
+        {   
+            studentsMap.put(studentId, student);
+        }
+        else
+        {
+            throw new RuntimeException("Datos no validos");
+        }
         
         return student;
     }
@@ -30,38 +37,51 @@ public class SimpleSchedulingResource {
     public Class createClass(String code, String title, String description) {
         
         Class clas = new Class(code, title, description);
-        classesMap.put(code, clas);
-        
+        if(!"".equals(code) && !"?".equals(title) && !"?".equals(description))
+        {
+            classesMap.put(code, clas);
+        }
+        else
+        {
+            throw new RuntimeException("Datos no validos");
+        }
         return clas;
         
     }
 
     public Student retrieveStudent(int studentId) {
-        return studentsMap.get(studentId);
+        Student s = studentsMap.get(studentId);
+        if(s!=null)
+        {
+            return s;
+        }
+        else
+        {
+            throw new RuntimeException("No existe");
+        }
     }
     
     public Class retrieveClass(String code){
-        return classesMap.get(code);
+        Class c = classesMap.get(code);
+        if(c!=null)
+        {
+            return c;
+        }
+        else
+        {
+            throw new RuntimeException("No existe");
+            
+        } 
     }
     
-    public void editStudent(int studentId, Student student){
-        studentsMap.replace(studentId, student);
+    public void editStudent(int studentId, String lastName, String firstName){
+        retrieveStudent(studentId).setLastName(lastName);
+        retrieveStudent(studentId).setFirstName(firstName);   
     }
     
-    public void editClassTitle(String code, String title){
-        classesMap.get(code).setTitle(title);
-    }
-    
-    public void editClassDescription(String code, String description){
-        classesMap.get(code).setDescription(description);
-    }
-    
-    public void editStundentFirstName(int studentId, String firstName){
-        studentsMap.get(studentId).setFirstName(firstName);
-    }
-    
-    public void editStudentLastName(int studentId, String lastName){
-        studentsMap.get(studentId).setLastName(lastName);
+    public void editClass(String code, String title, String description){
+        retrieveClass(code).setTitle(title);
+        retrieveClass(code).setDescription(description);
     }
     
     public void deleteStudent(int studentId)
@@ -76,8 +96,18 @@ public class SimpleSchedulingResource {
     
     public void addStudentToClass(int studentId, String code)
     {
-        classesMap.get(code).addId(studentId);
-        studentsMap.get(studentId).addCode(code);
+        Student s=studentsMap.get(studentId);
+        Class c=classesMap.get(code);
+        if(s!=null & c!=null)
+        {
+            c.addId(studentId);
+            s.addCode(code);
+        }
+        else
+        {
+            throw new RuntimeException("El estudiante o la clase no existe");
+        }
+        
     }
     
     public List<Student> getStudents()
@@ -92,4 +122,91 @@ public class SimpleSchedulingResource {
         return classes;
     }
     
+    public List<Class> showClassesFromStudent(int studentId)
+    {
+        List<Class> c = new ArrayList<>();
+        for(String code : retrieveStudent(studentId).getCodes())
+        {
+            c.add(retrieveClass(code));
+        }
+        return c;
+    }
+    
+    public List<Student> showStudentsFromClass(String code)
+    {
+        List<Student> s = new ArrayList<>();
+        for(int studentId : retrieveClass(code).getIds())
+        {
+            s.add(retrieveStudent(studentId));
+        }
+        return s;
+    }
+    
+    public Student searchStudentForFirstName(String campo)
+    {
+        for(Student s: getStudents())
+        {
+            if(s.getFirstName().equals(campo))
+            {
+                return s;
+            }
+            else
+            {
+             
+                throw new RuntimeException("Estudiante no encontrado");
+                
+            }
+        }
+        return null;
+    }
+    
+    public Student searchStudentForLastName(String campo)
+    {
+        for(Student s: getStudents())
+        {
+            if(s.getLastName().equals(campo))
+            {
+                return s;
+            }
+            else
+            {
+             
+                throw new RuntimeException("Estudiante no encontrado");
+                
+            }
+        }
+        return null;
+    }
+
+    public Class searchClassForTitle(String campo)
+    { 
+        for(Class c : getClasses())
+        {
+            if(c.getTitle().equals(campo))
+            {
+                return c;
+            }
+            else
+            {
+                throw new RuntimeException("Clase no encontrada");
+            }
+        }
+        return null;
+    }
+    
+       public Class searchClassForDescription(String campo)
+    { 
+        for(Class c : getClasses())
+        {
+            if(c.getDescription().equals(campo))
+            {
+                return c;
+            }
+            else
+            {
+                throw new RuntimeException("Clase no encontrada");
+            }
+        }
+        return null;
+    }
 }

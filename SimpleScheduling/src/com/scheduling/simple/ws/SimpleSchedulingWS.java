@@ -5,6 +5,7 @@ package com.scheduling.simple.ws;
 
 import com.scheduling.simple.model.Student;
 import com.scheduling.simple.model.Class;
+import java.util.List;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 
@@ -76,6 +77,59 @@ public class SimpleSchedulingWS {
         resource.deleteClass(code);
     }
     
+    public List<Student> getStudents()
+    {
+        return resource.getStudents();
+    }
+    
+    public List<Class> getClasses()
+    {
+        return resource.getClasses();
+    }
+    
+     public void editStudent(@WebParam(name = "studentId") int studentId,
+             @WebParam(name = "lastName") String lastName,
+             @WebParam(name = "firtsName") String firstName)
+    {
+        resource.editStudent(studentId,lastName,firstName);
+    }
+     
+    public void editClass(@WebParam(name = "code") String code,
+            @WebParam(name = "title") String title,
+            @WebParam(name = "description") String description)
+    {
+        resource.editClass(code, title, description);
+    }
+    
+    public List<Class> showClassesFromStudent(@WebParam(name = "studentdId") int studentId)
+    {
+        return resource.showClassesFromStudent(studentId);
+    }
+    
+    public List<Student> showStudentsFromClass(@WebParam(name = "code") String code)
+    {
+        return resource.showStudentsFromClass(code);
+    }
+    
+    public Student searchStudentForLastName(@WebParam(name = "lastName") String lastName)
+    {
+        return resource.searchStudentForLastName(lastName);
+    }
+    
+    public Student searchStudentForFirstName(@WebParam(name = "firstName") String firstName)
+    {
+        return resource.searchStudentForFirstName(firstName);
+    }
+    
+    public Class searchClassForTitle(@WebParam(name = "title") String title)
+    {
+        return resource.searchClassForTitle(title);
+    }
+    
+    public Class searchClassForDescription(@WebParam(name = "description") String description)
+    {
+        return resource.searchClassForDescription(description);
+    }
   
 
 }

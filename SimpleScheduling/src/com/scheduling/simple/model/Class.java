@@ -15,11 +15,11 @@ import javax.xml.bind.annotation.XmlType;
 public class Class {
     
     @XmlElement(name = "code")
-    private String code;
+    private String code="";
     @XmlElement(name = "title")
-    private String title;
+    private String title="?";
     @XmlElement(name = "description")
-    private String description;
+    private String description="?";
     @XmlElement(name = "ids")
     private List<Integer> ids;
 
