@@ -12,8 +12,8 @@ import java.util.Map;
 
 public class SimpleSchedulingResource {
     
-    private Map<Integer, Student> studentsMap;
-    private Map<String, Class> classesMap;
+    private final Map<Integer, Student> studentsMap;
+    private final Map<String, Class> classesMap;
 
     public SimpleSchedulingResource() {
         studentsMap = new HashMap<Integer, Student>();
@@ -24,7 +24,9 @@ public class SimpleSchedulingResource {
         Student student = new Student(studentId, lastName, firstName);
         if(studentId!=0 && !"?".equals(lastName) && !"?".equals(firstName))
         {   
+            synchronized(studentsMap){
             studentsMap.put(studentId, student);
+            }
         }
         else
         {
@@ -39,7 +41,10 @@ public class SimpleSchedulingResource {
         Class clas = new Class(code, title, description);
         if(!"".equals(code) && !"?".equals(title) && !"?".equals(description))
         {
-            classesMap.put(code, clas);
+            synchronized(classesMap)
+            {
+                classesMap.put(code, clas);
+            }
         }
         else
         {
@@ -50,7 +55,13 @@ public class SimpleSchedulingResource {
     }
 
     public Student retrieveStudent(int studentId) {
-        Student s = studentsMap.get(studentId);
+        
+        Student s;
+        synchronized(studentsMap)
+        {
+            s = studentsMap.get(studentId);
+        }
+        
         if(s!=null)
         {
             return s;
@@ -62,7 +73,11 @@ public class SimpleSchedulingResource {
     }
     
     public Class retrieveClass(String code){
-        Class c = classesMap.get(code);
+        Class c;
+        synchronized(classesMap){
+        c = classesMap.get(code);
+        }
+        
         if(c!=null)
         {
             return c;
@@ -96,9 +111,18 @@ public class SimpleSchedulingResource {
     
     public void addStudentToClass(int studentId, String code)
     {
-        Student s=studentsMap.get(studentId);
-        Class c=classesMap.get(code);
-        if(s!=null & c!=null)
+        Student s;
+        Class c;
+        synchronized(studentsMap)
+        {
+            s=studentsMap.get(studentId);
+        }
+        
+        synchronized(classesMap){
+            c=classesMap.get(code);
+        
+        }
+        if(s!=null & c!=null & isStudentInClass(studentId, code)==false)
         {
             c.addId(studentId);
             s.addCode(code);
@@ -209,4 +233,32 @@ public class SimpleSchedulingResource {
         }
         return null;
     }
+       
+    public boolean isStudentInClass(int studentId, String code)
+    {
+        boolean answer= false;
+        for(int id: retrieveClass(code).getIds())
+        {
+            if(id==studentId)
+            {
+                answer=true;
+            }
+        }
+        return answer;
+    }
+    
+    public boolean isClassInStudent(int studentId, String code)
+    {
+        boolean answer= false;
+        for(String cod: retrieveStudent(studentId).getCodes())
+        {
+            if(cod.equals(code))
+            {
+                answer=true;
+            }
+        }
+        return answer;
+    }
+    
+  
 }
